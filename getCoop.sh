@@ -8,7 +8,7 @@ GETLOWPRICE=$(curl -s -X GET -H "Content-type: application/json" -H "Accept: app
 echo "GET LOW PRICE: $GETLOWPRICE"
 
 # Get all information about the lowest priced item (json format)
-GETITEM=$(curl -s -X GET -H "Content-type: application/json" -H "Accept: application/json"  https://www.coop.se/handla-online/sok/"$ITEMSEARCH" | grep -i "$1" | sed -e 's/<[^>]*>//g' | grep "$GETLOWPRICE")
+GETITEM=$(curl -s -X GET -H "Content-type: application/json" -H "Accept: application/json"  https://www.coop.se/handla-online/sok/"$ITEMSEARCH" | grep -i "$1" | sed -e 's/<[^>]*>//g' | grep ":$GETLOWPRICE,")
 echo $GETITEM
 GETCOMPRPRICE=$(echo $GETITEM | jq -r '.comparativePrice')
 GETUNIT=$(echo $GETITEM | jq -r '.priceUnit')
