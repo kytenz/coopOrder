@@ -1,12 +1,12 @@
 <?php
-/* echo 'Hello ' . htmlspecialchars($_GET["text"]) . '!';*/
-/* TODO: The $text variable does not work when sending multiple words? */
+    $locale='sv_SE.UTF-8';
+    putenv('LC_ALL='.$locale);
     $text = $_GET["text"];
-    $text=escapeshellarg($text);
+    $text = escapeshellarg($text);
+    $text = trim($text);
     shell_exec('./coopSlackIntegration.sh '.$text.'');
     
-    /* $data = file_get_contents('test.json'); */
-    $data = file_get_contents('output.txt');
-    /* json_string = json_encode($data, JSON_PRETTY_PRINT); */
+    header('Content-Type: application/json');
+    $data = file_get_contents('test.json');
     echo $data;
 ?>

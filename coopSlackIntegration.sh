@@ -11,39 +11,26 @@ GETLOWPRICE=$(curl -s -X GET -H "Content-type: application/json" -H "Accept: app
 # Get all information about the lowest priced item (json format)
 # TODO: Get more than just one hit, maybe top 3?
 GETITEM=$(curl -s -X GET -H "Content-type: application/json" -H "Accept: application/json"  https://www.coop.se/handla-online/sok/"$ITEMSEARCH" | grep -i "$ITEM" | sed -e 's/<[^>]*>//g' | grep -m 1 ":$GETLOWPRICE,")
-#echo $GETITEM
-DATE=$(date +%Y%m%d%H%M%S)
 GETCOMPAREPRICE=$(echo $GETITEM | /usr/local/bin/jq -r '.comparativePrice')
 GETNAME=$(echo $GETITEM | /usr/local/bin/jq -r '.priceUnit')
 GETNAME=$(echo $GETITEM | /usr/local/bin/jq -r '.name')
 GETMANUFACTURER=$(echo $GETITEM | /usr/local/bin/jq -r '.manufacturer')
-#echo "$ITEM: $GETLOWPRICE SEK (Jmfr. pris: $GETCOMPAREPRICE/$GETUNIT)"
-#echo "$GETNAME ($GETMANUFACTURER): $GETLOWPRICE SEK (Jmfr. pris: $GETCOMPAREPRICE/$GETUNIT)"
+
 JSONFILE="test.json"
 > $JSONFILE
-echo "{"
-echo "    \"text\": \"$GETNAME ($GETMANUFACTURER): $GETLOWPRICE SEK (Jmfr. pris: $GETCOMPAREPRICE/$GETUNIT)\","
-echo "    \"attachments\": ["
-echo "        {"
-echo "            \"text\":\"$DATE\""
-echo "        }"
-echo "    ]"
-echo "}"
+echo -e "{" >> $JSONFILE
+echo -e "\"response_type\": \"in_channel\"," >> $JSONFILE
+echo -e "\t\"text\": \"$GETNAME ($GETMANUFACTURER)\"," >> $JSONFILE
+echo -e "\t\t\"attachments\": [" >> $JSONFILE
+echo -e "\t\t\t{" >> $JSONFILE
+echo -e "\t\t\t\t\"text\":\"$GETLOWPRICE SEK (Jmfr. pris: $GETCOMPAREPRICE/$GETUNIT)\"" >> $JSONFILE
+echo -e "\t\t\t}" >> $JSONFILE
+echo -e "\t\t]" >> $JSONFILE
+echo -e "}" >> $JSONFILE
 
-
-
-echo "{" >> $JSONFILE
-echo "    \"text\": \"$GETNAME ($GETMANUFACTURER): $GETLOWPRICE SEK (Jmfr. pris: $GETCOMPAREPRICE/$GETUNIT)\"," >> $JSONFILE
-echo "    \"attachments\": [" >> $JSONFILE
-echo "        {" >> $JSONFILE
-echo "            \"text\":\"$DATE\"" >> $JSONFILE
-echo "        }" >> $JSONFILE
-echo "    ]" >> $JSONFILE
-echo "}" >> $JSONFILE
-
-TEXTFILE="output.txt"
-> $TEXTFILE
-echo "$GETNAME ($GETMANUFACTURER): $GETLOWPRICE SEK (Jmfr. pris: $GETCOMPAREPRICE/$GETUNIT)" >> $TEXTFILE
+#TEXTFILE="output.txt"
+#> $TEXTFILE
+#echo "$GETNAME ($GETMANUFACTURER): $GETLOWPRICE SEK (Jmfr. pris: $GETCOMPAREPRICE/$GETUNIT)" >> $TEXTFILE
 
 # Old code
 # Get lowest price from coop (2017-01-16)
